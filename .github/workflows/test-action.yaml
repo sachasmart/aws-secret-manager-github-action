@@ -1,0 +1,30 @@
+name: Validate GitHub Action
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Job to Run"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+jobs:
+  validate:
+    if: ${{ github.event.trigger != 'workflow_dispatch' || inputs.target == 'all' }}
+    runs-on: ubuntu-latest
+    name: Validate GitHub Action
+    outputs:
+      CHECK_STATUS: "${{ env.CHECK_STATUS }}"
+    steps:
+      - name: Run Github Action
+        uses: sachasmart/aws-secret-manager-github-action@v0.0.1
+        with:
+          envVariableName: ${{ secrets.ENV_VARIABLE_NAME }}
+          secretId: ${{ secrets.SECRET_ID }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
